@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User List</title>
+  <style>
+     body {
+      font-family: Arial, sans-serif;
+      background: #ddd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: #1D382E;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 4px 4px 3px #007e20;
+      width: 300px;
+    }
+    h2 {
+       text-align: center;
+       margin-bottom: 15px;
+       color: white;
+    }
+    .input-box {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    .input-box input {
+      flex: 1;
+      padding: 6px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      margin-right: 8px;
+    }
+    .input-box button {
+      padding: 6px 12px;
+      background: #63ebf0;
+      border: none;
+      box-shadow: 2px 2px 3px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+      .input-box button:hover{
+        color: white;
+      }
+    ul { 
+      list-style: none; 
+      padding: 0;
+      margin: 0;
+    } 
+  li {
+  background: white;
+  margin: 5px 0;
+  padding: 5px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+/* force text left, buttons grouped right */
+li span {
+  flex: 1;
+}
+
+li button1,button2{
+  margin-left: 6px; 
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 2px 2px 3px #888;
+}
+li button1{
+   background:#2EB3F1;
+   color: white;
+}
+li button2{
+   background:red;
+   color: white;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>TO-DO List</h2>
+    <div class="input-box">
+      <input type="text" id="userInput" placeholder="Add a new User">
+      <button id="mainBtn" onclick="addUser()">Add User</button>
+    </div>
+    <ul id="userList"></ul>
+  </div>
+
+<script>
+  const input = document.getElementById("userInput");
+  const list = document.getElementById("userList");
+  const mainBtn = document.getElementById("mainBtn");
+  let editIndex = null;
+
+  // Load users when page opens
+  window.onload = renderUsers;
+
+  function getUsers() {
+    return JSON.parse(localStorage.getItem("users")) || [];
+  }
+
+  function saveUsers(users) {
+    localStorage.setItem("users", JSON.stringify(users));
+  }
+
+  function renderUsers() {
+    list.innerHTML = "";
+    getUsers().forEach((user, i) => {
+      const li = document.createElement("li");
+      const text = document.createElement("span");
+      text.textContent = user;
+
+      const updateBtn = document.createElement("button1");
+      updateBtn.textContent = "Update";
+      updateBtn.onclick = () => editUser(i);
+
+      const deleteBtn = document.createElement("button2");
+      deleteBtn.textContent = "Delete";
+      deleteBtn.onclick = () => deleteUser(i);
+
+      li.appendChild(text);
+      li.appendChild(updateBtn);
+      li.appendChild(deleteBtn);
+      list.appendChild(li);
+    });
+  }
+
+  function addUser() {
+    let users = getUsers();
+    let user = input.value.trim();
+    // if (!user) return;
+
+    if (editIndex !== null) {
+      users[editIndex] = user;
+      editIndex = null;
+      mainBtn.textContent = "Add User";
+    } else {
+      users.push(user);
+    }
+
+    saveUsers(users);
+    renderUsers();
+    input.value = "";
+  }
+
+  function editUser(index) {
+    input.value = getUsers()[index];
+    editIndex = index;
+    mainBtn.textContent = "Save Update";
+  }
+
+  function deleteUser(index) {
+    let users = getUsers();
+    users.splice(index, 1);
+    saveUsers(users);
+    renderUsers();
+  }
+</script>
+</body>
+</html>
+
